@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>质量域 Harness 工程架构规划</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', 'PingFang SC', 'Microsoft YaHei', monospace;
+      background: #020617; min-height: 100vh; padding: 2rem; color: white;
+    }
+    .container { max-width: 1500px; margin: 0 auto; }
+    .header { margin-bottom: 1.5rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.8rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5); border-radius: 1rem;
+      border: 1px solid #1e293b; padding: 1rem; overflow-x: auto;
+    }
+    svg { display: block; min-width: 1400px; }
+    .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card-dot.orange { background: #fb923c; }
+    .card-dot.sky { background: #38bdf8; }
+    .card-dot.pink { background: #f472b6; }
+    .card h3 { font-size: 0.8rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.7rem; }
+    .card li { margin-bottom: 0.3rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>质量域 Harness 工程架构规划</h1>
+      </div>
+      <p class="subtitle">Quality Domain Harness Architecture · 2026.06 · v0.1</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1480 1020">
+        <defs>
+          <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+          </marker>
+          <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+          </marker>
+          <marker id="arrow-violet" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#a78bfa"/>
+          </marker>
+          <marker id="arrow-amber" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+          </marker>
+          <marker id="arrow-rose" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#fb7185"/>
+          </marker>
+          <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+          </marker>
+          <marker id="arrow-sky" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#38bdf8"/>
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- Background -->
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+
+        <!-- ====== TITLE BAR ====== -->
+        <text x="740" y="24" fill="white" font-size="13" font-weight="700" text-anchor="middle">京东零售质量域 Harness 工程架构全景图</text>
+        <text x="740" y="40" fill="#64748b" font-size="9" text-anchor="middle">基于 Oxygen SE 体系 · Hermes 自学习 + Harness 工程基座 · 知识反哺闭环</text>
+
+        <!-- ====== SECTION: D-End Oxygen SE (Top) ====== -->
+        <rect x="20" y="55" width="1440" height="140" rx="10" fill="rgba(251, 191, 36, 0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="35" y="73" fill="#fbbf24" font-size="10" font-weight="700">Oxygen SE 体系（D-End 全局平台）</text>
+
+        <!-- Zero -->
+        <rect x="40" y="85" width="180" height="55" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="130" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">Zero（设计侧）</text>
+        <text x="130" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">Design → .md → Skill</text>
+        <text x="130" y="135" fill="#22d3ee" font-size="7" text-anchor="middle">技能市场 · 知识提炼 · CLI</text>
+
+        <!-- One -->
+        <rect x="250" y="85" width="200" height="55" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="350" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">One（产品/架构推演侧）</text>
+        <text x="350" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">需求→产品推演→架构推演</text>
+        <text x="350" y="135" fill="#34d399" font-size="7" text-anchor="middle">Skill编排 · RAG召回 · Agent推理</text>
+
+        <!-- Hermes -->
+        <rect x="480" y="85" width="200" height="55" rx="6" fill="rgba(251, 146, 60, 0.25)" stroke="#fb923c" stroke-width="1.5"/>
+        <text x="580" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">Hermes（上工程）</text>
+        <text x="580" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">轨迹记录→奖惩模型→知识蒸馏</text>
+        <text x="580" y="135" fill="#fb923c" font-size="7" text-anchor="middle">自学习 · 自更新 · 自进化</text>
+
+        <!-- D-End Harness -->
+        <rect x="710" y="85" width="220" height="55" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="820" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">D-End Harness（下工程）</text>
+        <text x="820" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">全局约束 · CI/CD · 验证闭环</text>
+        <text x="820" y="135" fill="#fbbf24" font-size="7" text-anchor="middle">中间件规范 · 高可用 · 环境治理</text>
+
+        <!-- D-End Knowledge -->
+        <rect x="960" y="85" width="220" height="55" rx="6" fill="rgba(76, 29, 149, 0.35)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="1070" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">D-End 知识体系</text>
+        <text x="1070" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">全局→领域→子域（三层架构）</text>
+        <text x="1070" y="135" fill="#a78bfa" font-size="7" text-anchor="middle">端知识 · 服务端知识 · Skills</text>
+
+        <!-- Agent base -->
+        <rect x="1210" y="85" width="230" height="55" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="1325" y="105" fill="white" font-size="11" font-weight="600" text-anchor="middle">Agent 基座（可插拔）</text>
+        <text x="1325" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">Claude Code ⇄ Codex ⇄ JoyCode</text>
+        <text x="1325" y="135" fill="#64748b" font-size="7" text-anchor="middle">模型网关 · Token管理 · 限流</text>
+
+        <!-- Arrows between top components -->
+        <line x1="220" y1="112" x2="248" y2="112" stroke="#22d3ee" stroke-width="1" marker-end="url(#arrow-cyan)"/>
+        <line x1="450" y1="112" x2="478" y2="112" stroke="#34d399" stroke-width="1" marker-end="url(#arrow-emerald)"/>
+        <line x1="680" y1="112" x2="708" y2="112" stroke="#fb923c" stroke-width="1" marker-end="url(#arrow-orange)"/>
+        <line x1="930" y1="112" x2="958" y2="112" stroke="#fbbf24" stroke-width="1" marker-end="url(#arrow-amber)"/>
+        <line x1="1180" y1="112" x2="1208" y2="112" stroke="#a78bfa" stroke-width="1" marker-end="url(#arrow-violet)"/>
+
+        <!-- "全局约束下发" label -->
+        <text x="825" y="155" fill="#fbbf24" font-size="7" text-anchor="middle">▲ 全局约束下发（中间件/高可用/配置规范）</text>
+
+        <!-- ====== DOWN ARROW: D-End → Quality Domain ====== -->
+        <line x1="740" y1="195" x2="740" y2="215" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-amber)"/>
+        <text x="760" y="210" fill="#fbbf24" font-size="8">继承全局约束 + 知识输入</text>
+
+        <!-- ====== SECTION: Quality Domain Harness (Center) ====== -->
+        <rect x="20" y="220" width="1440" height="490" rx="10" fill="rgba(34, 211, 238, 0.03)" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="35" y="240" fill="#22d3ee" font-size="10" font-weight="700">质量域 Harness 工程（Quality Domain Harness）</text>
+        <text x="1350" y="240" fill="#22d3ee" font-size="8">v0.1 · 主测试驱动 · 渐进式构建</text>
+
+        <!-- ===== LEFT: Agent Runtime Layer ===== -->
+        <rect x="35" y="255" width="330" height="210" rx="8" fill="rgba(6, 78, 59, 0.2)" stroke="#34d399" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="50" y="273" fill="#34d399" font-size="9" font-weight="600">Agent 运行时层</text>
+
+        <!-- 主测试 Agent -->
+        <rect x="50" y="285" width="300" height="48" rx="5" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="65" y="303" fill="#22d3ee" font-size="10" font-weight="700">AI 主测试 Agent</text>
+        <text x="65" y="318" fill="#94a3b8" font-size="7.5">联调协调 · 进展追踪 · 风险预警 · 物料清单 · 问题定位 · 会议待办</text>
+        <text x="65" y="329" fill="#34d399" font-size="6.5">Identity · Soul · User 三层定义 | 9大核心能力</text>
+
+        <!-- 专项 Agent -->
+        <rect x="50" y="342" width="95" height="36" rx="4" fill="rgba(6, 78, 59, 0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="97" y="356" fill="white" font-size="8" font-weight="600" text-anchor="middle">资损分析 Agent</text>
+        <text x="97" y="370" fill="#64748b" font-size="6" text-anchor="middle">财经质量组</text>
+
+        <rect x="152" y="342" width="95" height="36" rx="4" fill="rgba(6, 78, 59, 0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="199" y="356" fill="white" font-size="8" font-weight="600" text-anchor="middle">代码审查 Agent</text>
+        <text x="199" y="370" fill="#64748b" font-size="6" text-anchor="middle">黄流质量组</text>
+
+        <rect x="255" y="342" width="95" height="36" rx="4" fill="rgba(6, 78, 59, 0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="302" y="356" fill="white" font-size="8" font-weight="600" text-anchor="middle">用例生成 Agent</text>
+        <text x="302" y="370" fill="#64748b" font-size="6" text-anchor="middle">本地生活</text>
+
+        <rect x="50" y="387" width="95" height="36" rx="4" fill="rgba(6, 78, 59, 0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="97" y="401" fill="white" font-size="8" font-weight="600" text-anchor="middle">联调风险 Agent</text>
+        <text x="97" y="415" fill="#64748b" font-size="6" text-anchor="middle">本地生活</text>
+
+        <rect x="152" y="387" width="95" height="36" rx="4" fill="rgba(6, 78, 59, 0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="199" y="401" fill="white" font-size="8" font-weight="600" text-anchor="middle">物料构造 Agent</text>
+        <text x="199" y="415" fill="#64748b" font-size="6" text-anchor="middle">正逆向交易</text>
+
+        <rect x="255" y="387" width="95" height="36" rx="4" fill="rgba(6, 78, 59, 0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="302" y="401" fill="white" font-size="8" font-weight="600" text-anchor="middle">防呆分析 Agent</text>
+        <text x="302" y="415" fill="#64748b" font-size="6" text-anchor="middle">营销商品</text>
+
+        <text x="50" y="452" fill="#94a3b8" font-size="7">统一Skill编排层 | 多Agent协作 | StateGraph调度 | Agent可插拔</text>
+
+        <!-- ===== CENTER: Harness Core ===== -->
+        <rect x="385" y="255" width="340" height="210" rx="8" fill="rgba(120, 53, 15, 0.12)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="400" y="273" fill="#fbbf24" font-size="9" font-weight="600">Harness 工程核心</text>
+
+        <!-- Global Constraints -->
+        <rect x="400" y="285" width="310" height="55" rx="5" fill="rgba(136, 19, 55, 0.3)" stroke="#fb7185" stroke-width="1.2"/>
+        <text x="415" y="301" fill="white" font-size="9" font-weight="600">全局约束层（Global Constraints）</text>
+        <text x="415" y="318" fill="#94a3b8" font-size="7">质量门禁 · 资损规则 · 防呆模型 · 高可用规约</text>
+        <text x="415" y="333" fill="#fb7185" font-size="6.5">继承D-End规范 + 质量域专有约束</text>
+
+        <!-- Execution Environment -->
+        <rect x="400" y="348" width="310" height="55" rx="5" fill="rgba(251, 191, 36, 0.12)" stroke="#fbbf24" stroke-width="1.2"/>
+        <text x="415" y="364" fill="white" font-size="9" font-weight="600">执行环境层（Execution Environment）</text>
+        <text x="415" y="381" fill="#94a3b8" font-size="7">本地沙箱 · 特性环境 · DongTest集成 · 数据/Mock管理</text>
+        <text x="415" y="396" fill="#fbbf24" font-size="6.5">Agent开发→环境部署→自动测试→Debug→修复→回归 闭环</text>
+
+        <!-- Verification Layer -->
+        <rect x="400" y="411" width="310" height="42" rx="5" fill="rgba(76, 29, 149, 0.2)" stroke="#a78bfa" stroke-width="1.2"/>
+        <text x="415" y="427" fill="white" font-size="9" font-weight="600">验证反馈层（Verification &amp; Feedback）</text>
+        <text x="415" y="444" fill="#94a3b8" font-size="7">智能归因 · 采纳率追踪 · 准召率度量 · 反馈闭环</text>
+
+        <!-- ===== RIGHT: Skill Hub + Knowledge ===== -->
+        <rect x="745" y="255" width="340" height="210" rx="8" fill="rgba(76, 29, 149, 0.15)" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="760" y="273" fill="#a78bfa" font-size="9" font-weight="600">Skill Hub + 知识底座</text>
+
+        <!-- Skill Categories -->
+        <rect x="760" y="285" width="310" height="70" rx="5" fill="rgba(34, 211, 238, 0.12)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="775" y="300" fill="white" font-size="8.5" font-weight="600">质量域 Skill 体系（15+ 专项）</text>
+        <text x="775" y="317" fill="#94a3b8" font-size="6.5">PRD/TRD质检 · 代码Diff · 防呆 · 资损 · 测分 · 物料构造</text>
+        <text x="775" y="330" fill="#94a3b8" font-size="6.5">用例生成复用 · 自动化执行 · 联调风险 · PRD一致性</text>
+        <text x="775" y="343" fill="#94a3b8" font-size="6.5">风控引擎 · 数据测试 · 组件API · 首帧性能</text>
+        <text x="775" y="353" fill="#22d3ee" font-size="6">基底类→通用类→场景类 分层设计 | 共建→评审→发布→复用→反馈</text>
+
+        <!-- Knowledge -->
+        <rect x="760" y="365" width="310" height="88" rx="5" fill="rgba(76, 29, 149, 0.25)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="775" y="381" fill="white" font-size="8.5" font-weight="600">质量域知识库（三层架构）</text>
+        <text x="775" y="397" fill="#a78bfa" font-size="7">L1 链路层：系统依赖 · 接口图谱 · 责任人 · 数据标识</text>
+        <text x="775" y="413" fill="#a78bfa" font-size="7">L2 领域层：业务域知识 · 物料SOP · 联调经验 · 资损案例</text>
+        <text x="775" y="429" fill="#a78bfa" font-size="7">L3 应用层：系统知识 · 测试要点 · 缺陷FAQ · 历史案例</text>
+        <text x="775" y="447" fill="#a78bfa" font-size="6">知识存储 · 召回 · 保鲜 | ↑反哺D-End / ↓消费上游知识</text>
+
+        <!-- ===== RIGHT-MOST: Domain Nodes ===== -->
+        <rect x="1105" y="255" width="130" height="80" rx="5" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="1170" y="273" fill="white" font-size="8.5" font-weight="600" text-anchor="middle">交易域</text>
+        <text x="1170" y="289" fill="#64748b" font-size="6.5" text-anchor="middle">结算 · 订单 · 购物车</text>
+        <text x="1170" y="302" fill="#64748b" font-size="6" text-anchor="middle">一致性 · 幂等</text>
+        <text x="1170" y="318" fill="#94a3b8" font-size="6" text-anchor="middle">Skills + 知识</text>
+
+        <rect x="1255" y="255" width="130" height="80" rx="5" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="1320" y="273" fill="white" font-size="8.5" font-weight="600" text-anchor="middle">财经域</text>
+        <text x="1320" y="289" fill="#64748b" font-size="6.5" text-anchor="middle">收银台 · 支付 · 资产</text>
+        <text x="1320" y="302" fill="#64748b" font-size="6" text-anchor="middle">资损 · 对账</text>
+        <text x="1320" y="318" fill="#94a3b8" font-size="6" text-anchor="middle">Skills + 知识</text>
+
+        <rect x="1105" y="350" width="130" height="55" rx="5" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="1170" y="368" fill="white" font-size="8.5" font-weight="600" text-anchor="middle">流量域</text>
+        <text x="1170" y="384" fill="#64748b" font-size="6.5" text-anchor="middle">商详 · 搜索 · 推荐</text>
+        <text x="1170" y="398" fill="#94a3b8" font-size="6" text-anchor="middle">Skills + 知识</text>
+
+        <rect x="1255" y="350" width="130" height="55" rx="5" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="1320" y="368" fill="white" font-size="8.5" font-weight="600" text-anchor="middle">个性化域</text>
+        <text x="1320" y="384" fill="#64748b" font-size="6.5" text-anchor="middle">数据 · 算法 · 安全</text>
+        <text x="1320" y="398" fill="#94a3b8" font-size="6" text-anchor="middle">客服 · 风控</text>
+
+        <!-- ===== Arrows between quality components ===== -->
+        <line x1="365" y1="360" x2="383" y2="360" stroke="#34d399" stroke-width="1.2" marker-end="url(#arrow-emerald)"/>
+        <text x="374" y="354" fill="#34d399" font-size="6">调度</text>
+
+        <line x1="725" y1="360" x2="743" y2="360" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow-violet)"/>
+        <text x="734" y="354" fill="#a78bfa" font-size="6">Skill注册</text>
+
+        <!-- Knowledge flow arrows -->
+        <line x1="1070" y1="370" x2="1103" y2="370" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrow-violet)"/>
+        <text x="1086" y="363" fill="#a78bfa" font-size="5.5">知识消费</text>
+
+        <!-- ===== BOTTOM SECTION: Feedback Loop ===== -->
+        <!-- Feedback boundary -->
+        <rect x="20" y="475" width="1440" height="115" rx="8" fill="rgba(251, 146, 60, 0.04)" stroke="#fb923c" stroke-width="1" stroke-dasharray="6,3"/>
+        <text x="35" y="495" fill="#fb923c" font-size="9" font-weight="600">知识反哺机制（Knowledge Feedback Loop）⟳</text>
+
+        <!-- Step 1: Quality produces -->
+        <rect x="50" y="510" width="200" height="42" rx="5" fill="rgba(34, 211, 238, 0.15)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="150" y="526" fill="white" font-size="8" font-weight="600" text-anchor="middle">① 质量域产出</text>
+        <text x="150" y="542" fill="#94a3b8" font-size="7" text-anchor="middle">资损案例 · 缺陷模式 · 测试经验 · 防呆规则</text>
+
+        <line x1="250" y1="531" x2="290" y2="531" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+
+        <!-- Step 2: Distillation -->
+        <rect x="295" y="510" width="200" height="42" rx="5" fill="rgba(76, 29, 149, 0.2)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="395" y="526" fill="white" font-size="8" font-weight="600" text-anchor="middle">② 知识蒸馏 &amp; 质检</text>
+        <text x="395" y="542" fill="#94a3b8" font-size="7" text-anchor="middle">LLM蒸馏→人工审核→结构化入库</text>
+
+        <line x1="495" y1="531" x2="535" y2="531" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+
+        <!-- Step 3: Upstream push -->
+        <rect x="540" y="510" width="200" height="42" rx="5" fill="rgba(251, 191, 36, 0.15)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="640" y="526" fill="white" font-size="8" font-weight="600" text-anchor="middle">③ 反哺上游节点</text>
+        <text x="640" y="542" fill="#94a3b8" font-size="7" text-anchor="middle">对应业务域知识节点 · D-End全局知识</text>
+
+        <line x1="740" y1="531" x2="780" y2="531" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+
+        <!-- Step 4: Domain enriched -->
+        <rect x="785" y="510" width="200" height="42" rx="5" fill="rgba(6, 78, 59, 0.15)" stroke="#34d399" stroke-width="1"/>
+        <text x="885" y="526" fill="white" font-size="8" font-weight="600" text-anchor="middle">④ 域知识增强</text>
+        <text x="885" y="542" fill="#94a3b8" font-size="7" text-anchor="middle">更新Skills · 补充规则 · 案例积累</text>
+
+        <!-- Feedback cycle arrow -->
+        <path d="M 885 555 L 885 570 Q 885 580 875 580 L 160 580 Q 150 580 150 570 L 150 554" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrow-orange)"/>
+        <text x="520" y="590" fill="#fb923c" font-size="7" text-anchor="middle">⟳ 持续闭环：新项目自动获得增强后的知识 · 质量域产出持续反哺全域知识体系</text>
+
+        <!-- ===== BOTTOM: Run Mechanism ===== -->
+        <rect x="20" y="598" width="1440" height="55" rx="8" fill="rgba(15, 23, 42, 0.6)" stroke="#1e293b" stroke-width="1"/>
+        <text x="35" y="617" fill="white" font-size="9" font-weight="600">运转机制</text>
+        <text x="35" y="636" fill="#94a3b8" font-size="7.5">采集（项目产出→知识提取）→ 加工（LLM蒸馏+人工审核）→ 审核（主测/域Owner确认）→ 发布（入库+版本管理）→ 消费（Agent推理/Skill调用）→ 校准（反馈信号→自学习更新）</text>
+        <text x="1380" y="636" fill="#94a3b8" font-size="7" text-anchor="end">采集→加工→审核→发布→消费→校准 闭环</text>
+
+        <!-- ===== ARROWS between major sections ===== -->
+        <!-- Agent → Harness Core -->
+        <line x1="350" y1="470" x2="350" y2="495" stroke="#34d399" stroke-width="1"/>
+        <!-- Harness → Skill -->
+        <line x1="555" y1="470" x2="555" y2="495" stroke="#fbbf24" stroke-width="1"/>
+        <!-- Skill → Domain -->
+        <line x1="915" y1="470" x2="915" y2="495" stroke="#a78bfa" stroke-width="1"/>
+
+        <!-- ===== LEGEND ===== -->
+        <text x="1110" y="515" fill="white" font-size="8" font-weight="600">图例</text>
+        <rect x="1110" y="525" width="14" height="8" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="1128" y="532" fill="#94a3b8" font-size="6.5">Agent/运行时</text>
+        <rect x="1220" y="525" width="14" height="8" rx="2" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="1238" y="532" fill="#94a3b8" font-size="6.5">Harness/基础设施</text>
+
+        <rect x="1110" y="538" width="14" height="8" rx="2" fill="rgba(76, 29, 149, 0.25)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="1128" y="545" fill="#94a3b8" font-size="6.5">知识/Skill</text>
+        <rect x="1220" y="538" width="14" height="8" rx="2" fill="rgba(136, 19, 55, 0.3)" stroke="#fb7185" stroke-width="1"/>
+        <text x="1238" y="545" fill="#94a3b8" font-size="6.5">约束/风险</text>
+
+        <line x1="1110" y1="556" x2="1124" y2="556" stroke="#fb923c" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="1128" y="559" fill="#94a3b8" font-size="6.5">反哺流</text>
+
+        <!-- Watermark -->
+        <text x="1440" y="1000" fill="#1e293b" font-size="8" text-anchor="end">dobby-hermes · Quality Domain Harness · 2026.06</text>
+      </svg>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>Agent 运行时</h3>
+        </div>
+        <ul>
+          <li>• AI主测试Agent：联调协调中枢</li>
+          <li>• 6+专项Agent按域分工</li>
+          <li>• 统一Skill编排层，Agent可插拔</li>
+          <li>• 继承Hermes自学习机制</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Harness 核心</h3>
+        </div>
+        <ul>
+          <li>• 全局约束：质量门禁+资损+防呆</li>
+          <li>• 执行环境：沙箱+DongTest+CI/CD</li>
+          <li>• 验证闭环：测试→归因→修复→回归</li>
+          <li>• 采纳率/准召率量化度量</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>知识底座</h3>
+        </div>
+        <ul>
+          <li>• 三层架构：链路/领域/应用</li>
+          <li>• 15+专项Skill分层管理</li>
+          <li>• 消费D-End全局知识</li>
+          <li>• 反哺：资损案例→财经域节点</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot orange"></div>
+          <h3>知识反哺机制</h3>
+        </div>
+        <ul>
+          <li>• 产出→蒸馏→审核→反哺→增强</li>
+          <li>• 质量域→上游域节点自动关联</li>
+          <li>• 资损/缺陷/防呆规则标准化</li>
+          <li>• 闭环校验：版本+采纳追踪</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">
+      dobby-hermes · 京东零售质量域 Harness 工程 · 架构规划 v0.1 · 2026.06.07
+    </p>
+  </div>
+</body>
+</html>
