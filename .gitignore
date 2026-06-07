@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Hermes
+.hermes/cache/
+*.log
+
+# Feishu events (sensitive)
+feishu-events/
+
+# Env
+.env
+.env.local
